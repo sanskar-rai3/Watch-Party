@@ -1,5 +1,6 @@
 #include "httplib.h"
 #include <iostream>
+#include <string>
 
 int main() {
     httplib::Server svr;
