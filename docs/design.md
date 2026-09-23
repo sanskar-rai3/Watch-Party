@@ -106,3 +106,24 @@ Server
 │
 └── Runtime state
 ```
+
+### Party
+
+A `Party` represents a single watch-party room.
+
+Each party contains:
+
+- A unique party ID and Password(If the Party is private)
+- A set of connected client IDs
+
+The `Party` class is responsible for managing clients within a party.
+
+```text
+Party
+├── ID
+├── Password
+└── Clients
+    ├── Client ID
+    ├── Client ID
+    └── Client ID
+```
