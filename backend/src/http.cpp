@@ -5,6 +5,8 @@
 int main()
 {
 
+    PartyServer party;
+    party.start();
     httplib::Server hSvr;
 
     hSvr.set_pre_routing_handler(
