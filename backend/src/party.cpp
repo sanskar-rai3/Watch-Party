@@ -1,6 +1,6 @@
 #include "party.hpp"
-
 #include <string>
+#include<iostream>
 #include <utility>
 #include <unordered_set>
 
@@ -29,4 +29,14 @@ const std::string &Party::id() const {
 
 const std::unordered_set<int> &Party::clients() const {
     return clients_;
+}
+ 
+
+int main () {
+    Party party("123");
+    party.addClient(0);
+    bool empty = party.empty();
+    std::cout << empty << std::endl;
+
+    return 0;
 }
