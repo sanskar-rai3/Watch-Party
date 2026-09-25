@@ -56,7 +56,6 @@ int main()
         {
             std::string msg;
 
-            // Wait for this user to send their join information
             if (ws.read(msg))
             {
                 json data = json::parse(msg);
@@ -96,8 +95,6 @@ int main()
                     {
                         if (user.roomId == roomId)
                         {
-                            // Don't send "joined" notification to the person
-                            // who just joined
                             if (user.socket != &ws)
                             {
                                 json joined;
@@ -107,7 +104,6 @@ int main()
                                 user.socket->send(joined.dump());
                             }
 
-                            // Everyone still gets the updated user list
                             user.socket->send(response);
                         }
                     }
