@@ -2,8 +2,19 @@
 #include "httplib.h"
 #include "api/partyApi.hpp"
 #include "nlohmann/json.hpp"
+#include <string>
+#include <vector>
 
 using json = nlohmann::json;
+
+struct User
+{
+    std::string name;
+    std::string roomId;
+    httplib::ws::WebSocket *socket;
+};
+
+std::vector<User> users;
 
 int main()
 {
@@ -45,46 +56,69 @@ int main()
         {
             std::string msg;
 
-            while (ws.read(msg))
+            // Wait for this user to send their join information
+            if (ws.read(msg))
             {
-                try
+                json data = json::parse(msg);
+
+                std::string type = data["type"];
+
+                if (type == "join")
                 {
-                    json data = json::parse(msg);
+                    std::string name = data["name"];
+                    std::string roomId = data["roomId"];
 
-                    std::string type =
-                        data.at("type").get<std::string>();
+                    // Store this user's connection
+                    users.push_back({name,
+                                     roomId,
+                                     &ws});
 
-                    if (type == "join")
+                    std::cout << name
+                              << " joined room "
+                              << roomId
+                              << "\n";
+
+                    json roomUsers;
+                    roomUsers["type"] = "room_users";
+                    roomUsers["users"] = json::array();
+
+                    for (auto &user : users)
                     {
-                        std::string name =
-                            data.at("name").get<std::string>();
+                        if (user.roomId == roomId)
+                        {
+                            roomUsers["users"].push_back(user.name);
+                        }
+                    }
 
-                        std::string roomId =
-                            data.at("roomId").get<std::string>();
+                    std::string response = roomUsers.dump();
 
-                        std::cout
-                            << name
-                            << " joined room "
-                            << roomId
-                            << "\n";
-
-                        json response = {
-                            {"type", "join_success"},
-                            {"message", "Welcome " + name},
-                            {"roomId", roomId}};
-
-                        ws.send(response.dump());
+                    for (auto &user : users)
+                    {
+                        if (user.roomId == roomId)
+                        {
+                            user.socket->send(response);
+                        }
                     }
                 }
-                catch (const std::exception &e)
-                {
-                    json error = {
-                        {"type", "error"},
-                        {"message", e.what()}};
-
-                    ws.send(error.dump());
-                }
             }
+
+            
+            while (ws.read(msg))
+            {
+                
+            }
+
+            users.erase(
+                std::remove_if(
+                    users.begin(),
+                    users.end(),
+                    [&ws](const User &user)
+                    {
+                        return user.socket == &ws;
+                    }),
+                users.end());
+
+            std::cout << "User disconnected\n";
         });
 
     svr.Get("/", [](const httplib::Request &req, httplib::Response &res)
