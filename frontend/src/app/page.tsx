@@ -1,41 +1,99 @@
-"use client"
+"use client";
 
-import axios from "axios";
-import { useEffect } from "react";
+import { useRef, useState } from "react";
+import type { ChangeEvent } from "react";
 
-export default async function Home() {
-  const ws = new WebSocket("ws://localhost:8080/ws")
-  useEffect(() => {
+interface FormData {
+  name: string;
+  roomId: string;
+}
 
-    ws.onopen = () => {
-      console.log("Connection established");
-      ws.send("Calling from Next js")
-      
+interface ServerMessage {
+  type: string;
+  message?: string;
+  roomId: string;
+}
+
+export default function Home() {
+  const [data, setData] = useState<FormData>({
+    name: "",
+    roomId: ""
+  });
+
+  const ws = useRef<WebSocket | null>(null);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    setData((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const joinParty = () => {
+    if (!data.name || !data.roomId) {
+      console.log("Name and room ID are required");
+      return;
     }
 
-    ws.onmessage = (event) => {
-      console.log("From the server: ", event.data);
+    // Create WebSocket connection
+    const socket = new WebSocket(
+      "ws://localhost:8080/ws"
+    );
 
-    }
+    ws.current = socket;
 
-    ws.onerror = (error) => {
+    socket.onopen = () => {
+      console.log("WebSocket connected");
+
+      // Send join information to C++ server
+      socket.send(
+        JSON.stringify({
+          type: "join",
+          name: data.name,
+          roomId: data.roomId
+        })
+      );
+    };
+
+    socket.onmessage = (event) => {
+      const message: ServerMessage =
+        JSON.parse(event.data);
+
+      console.log("Server:", message);
+    };
+
+    socket.onerror = (error) => {
       console.error("WebSocket error:", error);
     };
-    ws.onclose = (event) => {
-      console.log("Connection closed");
-      console.log("Code:", event.code);
-      console.log("Reason:", event.reason);
+
+    socket.onclose = () => {
+      console.log("WebSocket disconnected");
     };
-
-    
-  })
-
-
+  };
 
   return (
-    <div className="flex items-center justify-center gap-10">
-      <button>Join room</button>
-      <button>Create room</button>
+    <div className="flex flex-col gap-4">
+      <input
+        type="text"
+        name="name"
+        value={data.name}
+        onChange={handleChange}
+        placeholder="Enter your name"
+      />
+
+      <input
+        type="text"
+        name="roomId"
+        value={data.roomId}
+        onChange={handleChange}
+        placeholder="Enter room ID"
+      />
+
+      <button onClick={joinParty}>
+        Join Party
+      </button>
     </div>
   );
 }
