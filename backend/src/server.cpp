@@ -96,16 +96,26 @@ int main()
                     {
                         if (user.roomId == roomId)
                         {
+                            // Don't send "joined" notification to the person
+                            // who just joined
+                            if (user.socket != &ws)
+                            {
+                                json joined;
+                                joined["type"] = "user_joined";
+                                joined["message"] = name + "joined the chat";
+
+                                user.socket->send(joined.dump());
+                            }
+
+                            // Everyone still gets the updated user list
                             user.socket->send(response);
                         }
                     }
                 }
             }
 
-            
             while (ws.read(msg))
             {
-                
             }
 
             users.erase(
