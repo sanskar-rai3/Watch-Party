@@ -4,8 +4,5 @@
 
 class PartyServer {
 public:
-    void start();
-
-private:
-    httplib::Server svr_;
+    void registerRoutes(httplib::Server& svr);
 };

@@ -1,40 +1,48 @@
-#include <iostream>
-#include "httplib.h"
 #include "api/partyApi.hpp"
+#include <iostream>
+#include <nlohmann/json.hpp>
+#include <string>
 
-void PartyServer::start()
+using json = nlohmann::json;
+
+void PartyServer::registerRoutes(httplib::Server &svr)
 {
-    svr_.set_pre_routing_handler(
-        [](const httplib::Request &req, httplib::Response &res)
-        {
-            res.set_header(
-                "Access-Control-Allow-Origin",
-                "http://localhost:3000");
+    svr.Post("/api/party/create",
+             [](const httplib::Request &req,
+                httplib::Response &res)
+             {
+                 try
+                 {
+                     json data = json::parse(req.body);
 
-            res.set_header(
-                "Access-Control-Allow-Methods",
-                "GET, POST, PUT, DELETE, OPTIONS");
+                     std::string host = data.at("host").get<std::string>();
+                     std::string partyName = data.at("partyName").get<std::string>();
+                     int maxUsers = data.at("maxUsers").get<int>();
 
-            res.set_header(
-                "Access-Control-Allow-Headers",
-                "Content-Type");
+                     std::cout << "Host: " << host << "\n";
+                     std::cout << "Party: " << partyName << "\n";
+                     std::cout << "Max users: " << maxUsers << "\n";
 
-            if (req.method == "OPTIONS")
+                     json response = {
+                         {"success", true},
+                         {"message", "Party craeted successfully"}};
+
+                     res.set_content(
+                         response.dump(),
+                         "application/json");       
+                 }
+                 catch (const std::exception &e)
+                 {
+                     std::cerr << e.what() << '\n';
+                 }
+             });
+
+    svr.Get("/api/parties",
+            [](const httplib::Request &req,
+               httplib::Response &res)
             {
-                res.status = 204;
-                return httplib::Server::HandlerResponse::Handled;
-            }
-
-            return httplib::Server::HandlerResponse::Unhandled;
-        });
-    svr_.Post("/api/party/create", [](const httplib::Request &req, httplib::Response &res)
-              {
-        std::cout << "Body: " << req.body << std::endl;
-
-            res.set_content(
-                R"({"message":"Party created"})",
-                "application/json"
-            ); });
-
-    svr_.listen("0.0.0.0", 8080);
+                res.set_content(
+                    R"({"parties":[]})",
+                    "application/json");
+            });
 }
