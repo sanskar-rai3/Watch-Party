@@ -1,42 +1,40 @@
 #include "party.hpp"
-#include <string>
-#include<iostream>
-#include <utility>
-#include <unordered_set>
+#include "user.hpp"
+#include "generateID.hpp"
 
-Party::Party(std::string id)
+#include <utility>
+#include <unordered_map>
+
+Party::Party(PartyID id)
     : id_(std::move(id)) {}
 
-bool Party::addClient(int client_id) {
-    return clients_.insert(client_id).second;
+User& Party::addUser(std::string name) {
+    UserID id;
+    do {
+        id = generateUserID();
+    } while (hasUser(id));
+
+    auto [it, inserted] = users_.emplace(id, User{id, name});
+
+    return it->second;
 }
 
-void Party::removeClient(int client_id) {
-    clients_.erase(client_id);
+bool Party::removeUser(const UserID& id) {
+    return users_.erase(id) > 0;
 }
 
-bool Party::hasClient(int client_id) const {
-    return clients_.contains(client_id);
+bool Party::hasUser(const UserID& id) const {
+    return users_.contains(id);
 }
 
 bool Party::empty() const {
-    return clients_.empty();
+    return users_.empty();
 }
 
-const std::string &Party::id() const {
+const PartyID &Party::id() const {
     return id_;
 }
 
-const std::unordered_set<int> &Party::clients() const {
-    return clients_;
-}
- 
-
-int main () {
-    Party party("123");
-    party.addClient(0);
-    bool empty = party.empty();
-    std::cout << empty << std::endl;
-
-    return 0;
+const std::unordered_map<UserID, User>& Party::users() const {
+    return users_;
 }

@@ -1,22 +1,31 @@
 #include "partyManager.hpp"
 #include "party.hpp"
 
-bool PartyManager::createParty(const std::string& id) {
-    if (parties_.contains(id))
-        return false;
+#include "generateID.hpp"
 
-    parties_.emplace(id, id);
-    return true;
+Party& PartyManager::createParty() {
+    PartyID id;
+    do {
+        id = generatePartyID();
+    } while (hasParty(id));
+
+    auto [it, inserted] = parties_.emplace(id, id);
+
+    return it->second;
 }
 
-bool PartyManager::deleteParty(const std::string& id) {
+bool PartyManager::deleteParty(const PartyID& id) {
     return parties_.erase(id) > 0;
 }
 
-const std::unordered_map<std::string, Party>& PartyManager::getParty() const {
-    return parties_;
+bool PartyManager::hasParty(const PartyID& id) const {
+    return parties_.contains(id);
 }
 
-bool PartyManager::hasParty(const std::string& id) {
-    return parties_.contains(id);
+bool PartyManager::empty() const {
+    return parties_.empty();
+}
+ 
+const std::unordered_map<std::string, Party>& PartyManager::getParty() const {
+    return parties_;
 }
