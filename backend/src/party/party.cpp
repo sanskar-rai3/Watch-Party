@@ -1,6 +1,6 @@
-#include "party.hpp"
-#include "user.hpp"
-#include "generateID.hpp"
+#include "party/party.hpp"
+#include "party/user.hpp"
+#include "utils/generateID.hpp"
 
 #include <utility>
 #include <unordered_map>

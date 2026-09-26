@@ -1,6 +1,6 @@
-#include "generateID.hpp"
-#include "user.hpp"
-#include "party.hpp"
+#include "utils/generateID.hpp"
+#include "party/user.hpp"
+#include "party/party.hpp"
 
 #include <random>
 
