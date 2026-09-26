@@ -1,9 +1,9 @@
 #include "party/user.hpp"
 
-User::User(UserID id, std::string name) {
-    this->id = id;
-    this->name = name;
-}
+#include <utility>
+
+User::User(UserID id, std::string name)
+    : id(id), name(std::move(name)) {}
 
 bool User::operator==(const User& other) const {
     return id == other.id;
