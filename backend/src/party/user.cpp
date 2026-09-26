@@ -1,4 +1,4 @@
-#include "user.hpp"
+#include "party/user.hpp"
 
 User::User(UserID id, std::string name) {
     this->id = id;

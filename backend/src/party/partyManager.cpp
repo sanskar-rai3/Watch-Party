@@ -1,7 +1,6 @@
-#include "partyManager.hpp"
-#include "party.hpp"
-
-#include "generateID.hpp"
+#include "party/partyManager.hpp"
+#include "party/party.hpp"
+#include "utils/generateID.hpp"
 
 Party& PartyManager::createParty() {
     PartyID id;
