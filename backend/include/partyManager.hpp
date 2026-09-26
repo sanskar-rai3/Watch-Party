@@ -5,13 +5,14 @@
 
 class PartyManager {
 public:
-    bool createParty(const PartyID& id);
-
+    Party& createParty();
     bool deleteParty(const PartyID& id);
 
+    bool hasParty(const PartyID& id) const;
+    bool empty() const;
+    
     const std::unordered_map<PartyID, Party>& getParty() const;
 
-    bool hasParty(const PartyID& id);
 
 private:
     std::unordered_map<PartyID, Party> parties_;
