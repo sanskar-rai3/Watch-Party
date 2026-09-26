@@ -2,18 +2,17 @@
 
 #include "party.hpp"
 #include <unordered_map>
-#include <string>
 
 class PartyManager {
 public:
-    bool createParty(const std::string& id);
+    bool createParty(const PartyID& id);
 
-    bool deleteParty(const std::string& id);
+    bool deleteParty(const PartyID& id);
 
-    const std::unordered_map<std::string, Party>& getParty() const;
+    const std::unordered_map<PartyID, Party>& getParty() const;
 
-    bool hasParty(const std::string& id);
+    bool hasParty(const PartyID& id);
 
 private:
-    std::unordered_map<std::string, Party>& parties_;
+    std::unordered_map<PartyID, Party> parties_;
 };
