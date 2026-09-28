@@ -1,9 +1,8 @@
-#include "httplib.h"
-#include <iostream>
-#include <string>
+#include "api/partyAPI.hpp"
 
 int main() {
-    
+    PartyAPI partyapi;
+    partyapi.start();
 
     return 0;
 }
