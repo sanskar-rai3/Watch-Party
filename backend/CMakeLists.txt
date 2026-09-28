@@ -9,6 +9,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
+    src/api/partyAPI.cpp
 )
 
 target_include_directories(${PROJECT_NAME}
