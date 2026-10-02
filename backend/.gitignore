@@ -1,4 +1,6 @@
 build/
 
+include/third_party
+
 WatchParty
 *.exe
