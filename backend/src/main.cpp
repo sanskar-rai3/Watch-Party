@@ -1,8 +1,9 @@
-#include "api/partyAPI.hpp"
+#include "application.hpp"
 
 int main() {
-    PartyAPI partyapi;
-    partyapi.start();
+    App app{};
+
+    app.start();
 
     return 0;
 }

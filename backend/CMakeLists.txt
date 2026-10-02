@@ -14,6 +14,7 @@ add_executable(${PROJECT_NAME}
     src/party/party.cpp
     src/party/partyManager.cpp
     src/party/user.cpp
+    src/application.cpp
 )
 
 target_include_directories(${PROJECT_NAME}
